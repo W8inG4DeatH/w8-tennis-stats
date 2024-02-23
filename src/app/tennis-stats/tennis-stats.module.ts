@@ -1,45 +1,40 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { AppRoutingModule } from './app-routing.module';
+import { TennisStatsComponent } from './tennis-stats.component';
+import { TennisStatsService } from './tennis-stats.service';
 
 /* Angular material */
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AngularMaterialModule } from './angular-material.module';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { AngularMaterialModule } from './../angular-material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-
-import { AppComponent } from './app.component';
-import { AppService } from './app.service';
-
-import { DashboardModule } from './dashboard/dashboard.module';
-import { TennisStatsModule } from './tennis-stats/tennis-stats.module';
+import { OrderModule } from 'ngx-order-pipe';
 
 @NgModule({
     imports: [
         BrowserModule,
         HttpClientModule,
-        AppRoutingModule,
+        BrowserAnimationsModule,
         AngularMaterialModule,
         FlexLayoutModule,
         FormsModule,
-        BrowserAnimationsModule,
-        DashboardModule,
-        TennisStatsModule
+        OrderModule
     ],
     declarations: [
-        AppComponent
+        TennisStatsComponent
     ],
     providers: [
-        AppService
+        TennisStatsService
     ],
-    bootstrap: [
-        AppComponent
+    exports: [
+        TennisStatsComponent
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA
     ]
 })
-export class AppModule { }
+
+export class TennisStatsModule { }

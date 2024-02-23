@@ -1,0 +1,60 @@
+.w8-field
+{
+    margin: 0 10px;
+}
+
+.ball-container
+{
+    cursor: pointer;
+
+    .ball
+    {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.by-all mat-card
+{
+    color: red;
+}
+.by-serve mat-card
+{
+    color: orange;
+}
+.by-surface mat-card
+{
+    color: yellow;
+}
+.by-point mat-card
+{
+    color: greenyellow;
+}
+.by-point-game mat-card
+{
+    color: lightgreen;
+}
+.by-point-game-set mat-card
+{
+    color: green;
+}
+.by-pred-sum mat-card
+{
+    color: grey;
+}
+.by-pred-sum-score mat-card
+{
+    color: lightgrey;
+}
+.by-pred-avg mat-card
+{
+    color: darkcyan;
+}
+.by-pred-avg-score mat-card
+{
+    color: cyan;
+}
+.sets-display
+{
+    color: greenyellow;
+}

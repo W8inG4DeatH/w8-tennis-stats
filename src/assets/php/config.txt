@@ -1,0 +1,19 @@
+TennisPlayers
+Id
+PlayerName
+
+TennisPlayersStats
+Id
+PlayerStats
+
+CREATE TABLE TennisPlayers (
+    Id int NOT NULL AUTO_INCREMENT,
+	PlayerName varchar(255) NOT NULL,
+    PRIMARY KEY (Id)
+);
+
+CREATE TABLE TennisPlayersStats (
+    Id int NOT NULL AUTO_INCREMENT,
+    PlayerStats TEXT,
+    PRIMARY KEY (Id)
+);

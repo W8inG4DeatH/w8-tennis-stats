@@ -1,0 +1,386 @@
+<div fxLayout="row">
+
+    <div fxLayout="column" fxFlex="40">
+
+        <mat-card class="my-custom-theme" fxLayout="column">
+            <div fxLayout="row" fxLayoutAlign="space-arround center">
+                <mat-form-field class="w8-field" fxFlex>
+                    <mat-select [(ngModel)]="surface">
+                        <mat-option *ngFor="let _surface of allSurfaces" [value]="_surface">{{ _surface.name }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="w8-field" fxFlex>
+                    <mat-select [(ngModel)]="matchDuration">
+                        <mat-option *ngFor="let _matchDuration of allMatchDurations" [value]="_matchDuration">{{ _matchDuration.name }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="w8-field" fxFlex>
+                    <mat-select [(ngModel)]="decidedSet">
+                        <mat-option *ngFor="let _decidedSet of allDecidedSetOptions" [value]="_decidedSet">{{ _decidedSet.name }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-arround center">
+                <div class="w8-field" fxLayout="row" fxLayoutAlign="center center" fxFlex="5">
+                    <div (click)="OnServerClick(0)" class="ball-container" [ngClass]="{'shadow': (isPlayer1OnServeNow === 1)}"><img src="./assets/img/ball.png" width="20px" height="20px"/></div>
+                </div>
+                <mat-form-field class="w8-field" fxFlex>
+                    <mat-select [(ngModel)]="player1" (ngModelChange)="OnPlayer1Change()">
+                        <mat-option *ngFor="let _player of allTennisPlayers | orderBy: 'PlayerName'" [value]="_player">{{ _player.PlayerName }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="w8-field" fxFlex>
+                    <mat-select [(ngModel)]="player2" (ngModelChange)="OnPlayer2Change()">
+                        <mat-option *ngFor="let _player of allTennisPlayers | orderBy: 'PlayerName'" [value]="_player">{{ _player.PlayerName }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div class="w8-field" fxLayout="row" fxLayoutAlign="center center" fxFlex="5">
+                    <div (click)="OnServerClick(1)" class="ball-container" [ngClass]="{'shadow': (isPlayer1OnServeNow === 0)}"><img src="./assets/img/ball.png" width="20px" height="20px"/></div>
+                </div>
+            </div>
+        </mat-card>
+
+        <mat-card *ngIf="!isMatchEnded && player1 && player1.Id && player2 && player2.Id" class="my-custom-theme next-row" fxLayout="row">
+            <div fxLayout="row" fxLayoutAlign="space-between" fxFlex="25">
+                <button *ngIf="matchScore.length > 1" (click)="OnScorePointBack()" mat-raised-button color="accent">BACK</button>
+                <button (click)="OnSimulateMatch()" mat-raised-button color="warn">SIMULATE MATCH</button>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center" fxFlex="20">
+                <button (click)="OnPlayerPoint(true)" mat-raised-button color="warn">POINT</button>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center" fxFlex>
+                <mat-card>vs</mat-card>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center" fxFlex="20">
+                <button (click)="OnPlayerPoint(false)" mat-raised-button color="warn">POINT</button>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center center" class="sets-display" fxFlex="25">
+                <div>Sets:</div>
+                <div *ngFor="let set of sets">&nbsp;{{ set }}</div>
+            </div>
+        </mat-card>
+        <mat-card *ngIf="isMatchEnded" class="my-custom-theme next-row" fxLayout="row">
+            <div fxLayout="row" fxLayoutAlign="center" fxFlex="15">
+                <button *ngIf="matchScore.length > 1" (click)="OnScorePointBack()" mat-raised-button color="accent">BACK</button>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center" fxFlex>
+                <div>Sets:</div>
+                <div *ngFor="let set of sets">&nbsp;{{ set }}</div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center" fxFlex= "30">
+                <button mat-raised-button color="primary">MATCH COMPLETED</button>
+            </div>
+        </mat-card>
+
+        <mat-card *ngIf="player1 && player1.Id && player2 && player2.Id" class="my-custom-theme next-row w8-row" fxLayout="row">
+            <div class="by-point-game-set" fxLayout="row" fxLayoutAlign="center" fxFlex="10">
+                <mat-card>{{ matchScore[matchScore.length - 1].sets.win }}</mat-card>
+            </div>
+            <div class="by-point-game" fxLayout="row" fxLayoutAlign="center" fxFlex="10">
+                <mat-card>{{ matchScore[matchScore.length - 1].games.win }}</mat-card>
+            </div>
+            <div class="by-point" fxLayout="row" fxLayoutAlign="center" fxFlex="25">
+                <mat-card>{{ matchScore[matchScore.length - 1].points.winDisplay }}</mat-card>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center" fxFlex>
+                <mat-card>vs</mat-card>
+            </div>
+            <div class="by-point" fxLayout="row" fxLayoutAlign="center" fxFlex="25">
+                <mat-card>{{ matchScore[matchScore.length - 1].points.loseDisplay }}</mat-card>
+            </div>
+            <div class="by-point-game" fxLayout="row" fxLayoutAlign="center" fxFlex="10">
+                <mat-card>{{ matchScore[matchScore.length - 1].games.lose }}</mat-card>
+            </div>
+            <div class="by-point-game-set" fxLayout="row" fxLayoutAlign="center" fxFlex="10">
+                <mat-card>{{ matchScore[matchScore.length - 1].sets.lose }}</mat-card>
+            </div>
+        </mat-card>
+
+        <mat-card *ngIf="DEBUGGER && player1 && player1.Id && player2 && player2.Id" class="my-custom-theme next-row" fxLayout="column">
+            {{ matchScore[matchScore.length - 1] | json }}
+        </mat-card>
+
+        <mat-card class="my-custom-theme next-row" fxLayout="column">
+            <mat-form-field class="w8-field" fxLayout="row">
+                <textarea [(ngModel)]="matchStats" matInput rows="25" placeholder="FlashScore PointByPoint Stats" fxFlex></textarea>
+            </mat-form-field>
+            <div class="w8-field" fxLayout="row" fxLayoutAlign="center center">
+                <div fxFlex></div>
+                <button *ngIf="isServerChoosed !== true" mat-raised-button color="primary">Choose Server!</button>
+                <button *ngIf="isServerChoosed === true" (click)="OnAddMatchStatsClick()" mat-raised-button color="primary">Process FlashScore PointByPoint Stats</button>
+                <div fxFlex></div>
+                <button *ngIf="isMatchEnded && (appService.appPassword === 'IHS')" (click)="OnSaveMatchStatsClick()" mat-raised-button color="primary">Save Stats to Overall</button>
+                <div fxFlex></div>
+            </div>
+        </mat-card>
+
+        <mat-card *ngIf="DEBUGGER" class="my-custom-theme next-row" fxLayout="column">
+            matchStats:<br>
+            {{ matchStats | json }}
+        </mat-card>
+
+        <mat-card *ngIf="DEBUGGER" class="my-custom-theme next-row" fxLayout="column">
+            allTennisPlayers:<br>
+            {{ allTennisPlayers | json }}
+        </mat-card>
+
+        <mat-card *ngIf="appService.appPassword === 'IHS'" class="my-custom-theme next-row" fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxFlex="20">Add Player:&nbsp;</div>
+            <mat-form-field class="w8-field" fxFlex>
+                <input [(ngModel)]="newPlayerName" matInput placeholder="Name">
+            </mat-form-field>
+            <button (click)="OnAddPlayerClick()" mat-raised-button color="warn" fxFlex="20">Add</button>
+        </mat-card>
+
+        <mat-card *ngIf="appService.appPassword === 'IHS'" class="my-custom-theme" fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxFlex="20">Remove Player:&nbsp;</div>
+            <mat-form-field class="w8-field" fxFlex>
+                <mat-select [(ngModel)]="deletePlayerId">
+                    <mat-option *ngFor="let player of allTennisPlayers | orderBy: 'PlayerName'" [value]="player.Id">{{ player.PlayerName }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button (click)="OnRemovePlayerClick()" mat-raised-button color="accent" fxFlex="20">Remove</button>
+        </mat-card>
+
+        <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="center center">
+            <button (click)="DEBUGGER = !DEBUGGER" mat-raised-button color="accent" fxFlex="20">DEBUGGER</button>
+        </mat-card>
+
+    </div>
+
+    <div class="next-column" fxLayout="column" fxFlex="60">
+
+        <mat-card class="my-custom-theme" fxLayout="row">
+            <div class="w8-field" fxLayout="row" fxLayoutAlign="center center" fxFlex="5">
+                <div class="ball-container" [ngClass]="{'shadow': (isPlayer1OnServeNow === 1)}"><img src="./assets/img/ball.png" width="20px" height="20px"/></div>
+            </div>
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="start center" fxFlex="45">
+                {{ player1.PlayerName }}
+            </mat-card>
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="start center" fxFlex="45">
+                {{ player2.PlayerName }}
+            </mat-card>
+            <div class="w8-field" fxLayout="row" fxLayoutAlign="center center" fxFlex="5">
+                <div class="ball-container" [ngClass]="{'shadow': (isPlayer1OnServeNow === 0)}"><img src="./assets/img/ball.png" width="20px" height="20px"/></div>
+            </div>
+        </mat-card>
+
+        <mat-card class="my-custom-theme" fxLayout="row">
+
+            <mat-card *ngFor="let playerStats of [ [player1StatsNowDisplay, player1StatsOverallDisplay], [player2StatsNowDisplay, player2StatsOverallDisplay] ]" class="my-custom-theme" fxLayout="column" fxFlex="50">
+
+                <div fxLayout="row">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        ACCURACY / EVENT
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        Match
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        Overall
+                    </mat-card>
+                </div>
+
+                <div fxLayout="row" class="by-all">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        by ALL
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].byAll.oddDisplay }}
+                        {{ playerStats[0].byAll.win }}/{{ playerStats[0].byAll.win + playerStats[0].byAll.lose }}&nbsp;({{ playerStats[0].byAll.percent }}%)
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].byAll.oddDisplay }}
+                        {{ playerStats[1].byAll.win }}/{{ playerStats[1].byAll.win + playerStats[1].byAll.lose }}&nbsp;({{ playerStats[1].byAll.percent }}%)
+                    </mat-card>
+                </div>
+
+                <div fxLayout="row" class="by-serve">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        by SERVE
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].byServe.oddDisplay }}
+                        {{ playerStats[0].byServe.win }}/{{ playerStats[0].byServe.win+playerStats[0].byServe.lose }}&nbsp;({{ playerStats[0].byServe.percent }}%)
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].byServe.oddDisplay }}
+                        {{ playerStats[1].byServe.win }}/{{ playerStats[1].byServe.win+playerStats[1].byServe.lose }}&nbsp;({{ playerStats[1].byServe.percent }}%)
+                    </mat-card>
+                </div>
+
+                <div fxLayout="row" class="by-surface">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        by SURFACE
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].bySurface.oddDisplay }}
+                        {{ playerStats[0].bySurface.win }}/{{ playerStats[0].bySurface.win+playerStats[0].bySurface.lose }}&nbsp;({{ playerStats[0].bySurface.percent }}%)
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].bySurface.oddDisplay }}
+                        {{ playerStats[1].bySurface.win }}/{{ playerStats[1].bySurface.win+playerStats[1].bySurface.lose }}&nbsp;({{ playerStats[1].bySurface.percent }}%)
+                    </mat-card>
+                </div>
+
+                <div fxLayout="row" class="by-point">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        by POINTS
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].byPoints.oddDisplay }}
+                        {{ playerStats[0].byPoints.win }}/{{ playerStats[0].byPoints.win+playerStats[0].byPoints.lose }}&nbsp;({{ playerStats[0].byPoints.percent }}%)
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].byPoints.oddDisplay }}
+                        {{ playerStats[1].byPoints.win }}/{{ playerStats[1].byPoints.win+playerStats[1].byPoints.lose }}&nbsp;({{ playerStats[1].byPoints.percent }}%)
+                    </mat-card>
+                </div>
+
+                <div fxLayout="row" class="by-point-game">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        by PS&GAMES
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].byPointsGames.oddDisplay }}
+                        {{ playerStats[0].byPointsGames.win }}/{{ playerStats[0].byPointsGames.win+playerStats[0].byPointsGames.lose }}&nbsp;({{ playerStats[0].byPointsGames.percent }}%)
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].byPointsGames.oddDisplay }}
+                        {{ playerStats[1].byPointsGames.win }}/{{ playerStats[1].byPointsGames.win+playerStats[1].byPointsGames.lose }}&nbsp;({{ playerStats[1].byPointsGames.percent }}%)
+                    </mat-card>
+                </div>
+
+                <div fxLayout="row" class="by-point-game-set">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        by PS&GS&SETS
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].byPointsGamesSets.oddDisplay }}
+                        {{ playerStats[0].byPointsGamesSets.win }}/{{ playerStats[0].byPointsGamesSets.win+playerStats[0].byPointsGamesSets.lose }}&nbsp;({{ playerStats[0].byPointsGamesSets.percent }}%)
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].byPointsGamesSets.oddDisplay }}
+                        {{ playerStats[1].byPointsGamesSets.win }}/{{ playerStats[1].byPointsGamesSets.win+playerStats[1].byPointsGamesSets.lose }}&nbsp;({{ playerStats[1].byPointsGamesSets.percent }}%)
+                    </mat-card>
+                </div>
+
+                <div fxLayout="row" class="by-pred-sum">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        Prediction SUM Own
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].predictionSUMOwn.percent }}%&nbsp;{{ playerStats[0].predictionSUMOwn.oddDisplay }}
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].predictionSUMOwn.percent }}%&nbsp;{{ playerStats[1].predictionSUMOwn.oddDisplay }}
+                    </mat-card>
+                </div>
+                <div fxLayout="row" class="by-pred-sum">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        Prediction SUM Opp
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].predictionSUMOpp.percent }}%&nbsp;{{ playerStats[0].predictionSUMOpp.oddDisplay }}
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].predictionSUMOpp.percent }}%&nbsp;{{ playerStats[1].predictionSUMOpp.oddDisplay }}
+                    </mat-card>
+                </div>
+                <div fxLayout="row" class="by-pred-sum-score">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        Prediction SUM
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].predictionSUM.percent }}%&nbsp;{{ playerStats[0].predictionSUM.oddDisplay }}
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].predictionSUM.percent }}%&nbsp;{{ playerStats[1].predictionSUM.oddDisplay }}
+                    </mat-card>
+                </div>
+
+                <div fxLayout="row" class="by-pred-avg">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        Prediction AVG Own
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].predictionAVGOwn.percent }}%&nbsp;{{ playerStats[0].predictionAVGOwn.oddDisplay }}
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].predictionAVGOwn.percent }}%&nbsp;{{ playerStats[1].predictionAVGOwn.oddDisplay }}
+                    </mat-card>
+                </div>
+                <div fxLayout="row" class="by-pred-avg">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        Prediction AVG Opp
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].predictionAVGOpp.percent }}%&nbsp;{{ playerStats[0].predictionAVGOpp.oddDisplay }}
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].predictionAVGOpp.percent }}%&nbsp;{{ playerStats[1].predictionAVGOpp.oddDisplay }}
+                    </mat-card>
+                </div>
+                <div fxLayout="row" class="by-pred-avg-score">
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="40">
+                        Prediction AVG
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="25">
+                        {{ playerStats[0].predictionAVG.percent }}%&nbsp;{{ playerStats[0].predictionAVG.oddDisplay }}
+                    </mat-card>
+                    <mat-card class="my-custom-theme" fxLayout="row" fxFlex="35">
+                        {{ playerStats[1].predictionAVG.percent }}%&nbsp;{{ playerStats[1].predictionAVG.oddDisplay }}
+                    </mat-card>
+                </div>
+
+            </mat-card>
+
+        </mat-card>
+
+        <mat-card *ngIf="DEBUGGER" class="my-custom-theme" fxLayout="row">
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="space-arround center" fxFlex="50">
+                {{ player1.PlayerName }} - Match Stats:<br>
+                {{ player1StatsNowDisplay | json }}
+            </mat-card>
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="space-arround center" fxFlex="50">
+                {{ player2.PlayerName }} - Match Stats:<br>
+                {{ player2StatsNowDisplay | json }}
+            </mat-card>
+        </mat-card>
+
+        <mat-card *ngIf="DEBUGGER" class="my-custom-theme" fxLayout="row">
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="space-arround center" fxFlex="50">
+                {{ player1.PlayerName }} - Overall Stats:<br>
+                {{ player1StatsOverallDisplay | json }}
+            </mat-card>
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="space-arround center" fxFlex="50">
+                {{ player2.PlayerName }} - Overall Stats:<br>
+                {{ player2StatsOverallDisplay | json }}
+            </mat-card>
+        </mat-card>
+
+        <mat-card *ngIf="DEBUGGER" class="my-custom-theme" fxLayout="row">
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="space-arround center" fxFlex="50">
+                {{ player1.PlayerName }} - Match Last Data:<br>
+                {{ player1StatsNow[player1StatsNow.length - 1] | json }}
+            </mat-card>
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="space-arround center" fxFlex="50">
+                {{ player2.PlayerName }} - Match Last Data:<br>
+                {{ player2StatsNow[player2StatsNow.length - 1] | json }}
+            </mat-card>
+        </mat-card>
+
+        <mat-card *ngIf="DEBUGGER" class="my-custom-theme" fxLayout="row">
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="space-arround center" fxFlex="50">
+                {{ player1.PlayerName }} - Overall Data:<br>
+                {{ player1StatsOverall | json }}
+            </mat-card>
+            <mat-card class="my-custom-theme" fxLayout="row" fxLayoutAlign="space-arround center" fxFlex="50">
+                {{ player2.PlayerName }} - Overall Data:<br>
+                {{ player2StatsOverall | json }}
+            </mat-card>
+        </mat-card>
+
+    </div>
+
+</div>
